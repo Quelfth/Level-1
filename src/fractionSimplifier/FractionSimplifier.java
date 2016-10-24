@@ -5,7 +5,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class FractionSimplifier {
+public class FractionSimplifier{
 	JFrame frame = new JFrame();
 	JPanel panel = new JPanel();
 	JTextField numerator = new JTextField(1);
@@ -24,6 +24,7 @@ public class FractionSimplifier {
 	}
 	
 	void update(){
+		frame.pack();
 		int num = 0;
 		int denom = 0;
 		try{
@@ -31,7 +32,7 @@ public class FractionSimplifier {
 			denom = Integer.parseInt(denominator.getText());
 		}catch(Exception e){
 		}
-		int[] res = simplify(num, denom);
+		result.setText(sf(simplify(num,denom)));
 	}
 	
 	public static void main(String[] args){
@@ -41,16 +42,62 @@ public class FractionSimplifier {
 		}
 	}
 	
-	public int[] simplify(int numerator, int denominator){
-		for(int i = 2; i < numerator/2 && i < denominator/2; i++){
-			if(numerator % i == 0 && denominator % i == 0){
-				numerator /= i;
-				denominator /= i;
-			}
+	public String sf(int[] f){
+		switch(f[1]){
+		case 0:
+			return "NaN";
+		case 1:
+			return f[0]+"";
+		default:
+			return f[0]+"/"+f[1];
+		}
+	}
+	
+	public int[] td(int div, int n, int d){
+		if(n%div==0&&d%div==0){
+			n/=div;
+			d/=div;
 		}
 		int[] result = new int[2];
-		result[0] = numerator;
-		result[1] = denominator;
+		result[0]=n;
+		result[1]=d;
 		return result;
+	}
+	
+	public int[] td(int div, int[] f){
+		return td(div, f[0], f[1]);
+	}
+	
+	public boolean tdc(int div, int n, int d){
+		if(n%div==0&&d%div==0){
+			return true;
+		}else{
+			return false;
+		}
+	}
+	
+	public boolean tdc(int div, int[] f){
+		return tdc(div, f[0], f[1]);
+	}
+	
+	public int[] simplify(int numerator, int denominator){
+		int[] f = new int[2];
+		f[0]=numerator;
+		f[1]=denominator;
+		int LS = 0;
+		if(f[0]<f[1]){
+			LS = f[0];
+		}else{
+			LS = f[1];
+		}
+		for(int i = 2; i < LS;i++){
+			System.out.println("Testing divisor "+i);
+			f = td(i, f);
+			if(tdc(i, f)){
+				i=2;
+			}
+			System.out.println(sf(td(i, f)));
+		}
+		return f;
 	}
 }
